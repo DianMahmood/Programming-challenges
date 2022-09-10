@@ -18,8 +18,16 @@ def conversion_minutes(rods):
     return (conversion_miles(rods) / 3.1) * 60
 
 
-rods = float(int(input("Input rods: ")))
+def getinput():
+    rods = float(input("Input rods: "))
+    print(f"You input {rods} rods")
+    return rods
 
-print(f"You input {rods} rods")
-print(f"\nConversions:\nMeters: {conversion_meters(rods)}\nFeet: {conversion_feet(rods)}\nMiles: {conversion_miles(rods)}\nFurlongs: {conversion_furlongs(rods)}")
-print(f"Minutes to walk {rods} rods: {conversion_minutes(rods)}")
+
+def giveoutput():
+    print(f"\nConversions:\nMeters: {conversion_meters(rods)}\nFeet: {conversion_feet(rods)}\nMiles: {conversion_miles(rods)}\nFurlongs: {conversion_furlongs(rods)}")
+    print(f"Minutes to walk {rods} rods: {conversion_minutes(rods)}")
+
+
+rods = getinput()
+giveoutput()
