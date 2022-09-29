@@ -53,7 +53,6 @@ def songs(html):
     list_song = []
     i = 0
     song = 0
-    end = html.find("CENTRAL CEE")
     while song < 10:
         open_tr = html.find('<tr>', i)
         close_tr = html.find("</tr>", open_tr)
