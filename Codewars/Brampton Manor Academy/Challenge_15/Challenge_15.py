@@ -28,8 +28,7 @@ def process(csv, html):
 
 def write_html(path, html):
     with open(path, "w") as file:
-        new_file = file.write(html)
-    return new_file
+    return file.write(html)
 
 
 if __name__ == "__main__":
