@@ -1,3 +1,4 @@
+from pathlib import Path
 import csv
 
 
@@ -7,38 +8,34 @@ def read_csv(path):
         csvreader = csv.reader(file, delimiter=",")
         for row in csvreader:
             csv_content.append(row)
-        return csv_content
+    return csv_content
 
 
 def read_html(path):
-    file = open(path)
-    return file.read()
+    with open(path) as file:
+        return file.read()
 
 
-def initials(csv, html):
-    i = 0
-    initials_list = []
-    number = 0
-    while number < 5:
-        for y in range(0, 5):
-            text = read_csv(csv)
-            file = read_html(html)
-            open_h2 = file.find("<h2", i)
-            close_h2 = file.find("/h2", open_h2)
-            newstring = file[open_h2:close_h2]
-            lookingfor = 'class="el__heading">'
-            pos_start = newstring.find(lookingfor)
-            pos_end = newstring.find("<", pos_start)
-            x = newstring[pos_start+len(lookingfor):pos_end]
-            replace = text[y][1]
-            new = x.replace(x, replace)
-            initials_list.append(new)
-            i = close_h2
-            number += 1
-    return initials_list
+def process(csv, html):
+    for x in range(1,6):
+        html = html.replace(f"initials{x}", csv[x-1][1])
+    for x in range(1,6):
+            html = html.replace(f"link{x}", csv[x-1][0])
+    for x in range(1,6):
+        html = html.replace(f"name{x}", csv[x-1][2])
+    return html
 
 
-text = "south.csv"
-web = "south.html"
-print(initials(text, web))
+def write_html(path, html):
+    with open(path, "w") as file:
+        new_file = file.write(html)
+    return new_file
 
+
+if __name__ == "__main__":
+    csv_file = Path("south.csv")
+    html_file = Path("south.html")
+    csv_data = read_csv(path=csv_file)
+    html_data = read_html(path=html_file)
+    html = process(csv=csv_data, html=html_data)
+    write_html(path="south_final.html", html=html)
