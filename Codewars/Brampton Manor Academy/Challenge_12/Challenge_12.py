@@ -40,4 +40,4 @@ card_number = input("Enter 16-digit card number: ")
 #print(check_validity(card_number))
 #print(pan(card_number))
 #print(checksum(card_number))
-print(issuer(card_number))
+print(issuer(card_number)) # Not Finished
