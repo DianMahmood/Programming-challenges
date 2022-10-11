@@ -1,10 +1,8 @@
 def check_validity(num):
     if len(num) > 16:
-        return "Too long"
+        print("Too long")
     elif len(num) < 16:
-        return "Too short"
-    else:
-        return num.isnumeric()
+        print("Too short")
 
 
 def pan(num):
@@ -29,15 +27,15 @@ def issuer(num):
         "54": "MasterCard",
         "55": "MasterCard",
     }
-    check = num[0:2], num[0:1]
-    if check in dictionary:
-        return f"Issuer is {dictionary[check]}"
+    if num[0:2] in dictionary:
+        return dictionary[num[0:2]]
+    elif num[0:1] in dictionary:
+        return dictionary[num[0:1]]
 
 
-
-
-card_number = input("Enter 16-digit card number: ")
-#print(check_validity(card_number))
-#print(pan(card_number))
-#print(checksum(card_number))
-print(issuer(card_number)) # Not Finished
+while True:
+    card_number = int(input("Enter card number: "))
+    card_number = str(card_number)
+    if check_validity(card_number):
+        print(f"Personal Account Number: {pan(card_number)}\nChecksum Digit: {checksum(card_number)}\nIssuer: {issuer(card_number)}")
+        break
