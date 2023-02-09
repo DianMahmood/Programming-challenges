@@ -382,7 +382,15 @@ class Martingale(Player):
 
 
 class PlayerRandom(Player):
-    pass
+    def __init__(self, table, stake, time):
+        super().__init__(table)
+        self.stake = stake
+        self.time = time
+        self.bins = list(Bin() for i in range(38))
+        
+        
+    def biniterator(self):
+        pass
 
 
 
