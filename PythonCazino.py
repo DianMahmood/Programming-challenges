@@ -382,15 +382,34 @@ class Martingale(Player):
 
 
 class PlayerRandom(Player):
-    def __init__(self, table, stake, time):
+    def __init__(self, table):
         super().__init__(table)
-        self.stake = stake
-        self.time = time
-        self.bins = list(Bin() for i in range(38))
-        
-        
-    def biniterator(self):
-        pass
+        self.rng = random.Random()
+
+
+    def placeBets(self):
+        self.initialBet = self.rng.randint(0, self.stake)
+
+
+class PlayerFibonacci(Player):
+    def __init__(self, table):
+        super().__init__(table)
+        self.recent = 1
+        self.previous = 0
+
+
+    def win(self, bet):
+        super().win(bet)
+        self.recent = 1
+        self.previous = 0
+
+
+    def lose(self, bet):
+        super().lose(bet)
+        self.nextBet = self.recent + self.previous
+        self.previous = self.recent
+        self.recent = self.nextBet
+
 
 
 
@@ -444,17 +463,13 @@ class Simulator:
         return maxima, durations
 
 
-
 class IntegerStatistics(list):
     def mean(self):
-        return sum(self)/len(self)
-
+        return sum(self) / len(self)
 
     def stdev(self):
         m = self.mean()
-        return math.sqrt( sum( (x-m)**2 for x in self ) / (len(self)-1) )
-
-
+        return math.sqrt(sum((x - m) ** 2 for x in self) / (len(self) - 1))
 
 
 rwheel = Wheel()
