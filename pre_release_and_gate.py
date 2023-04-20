@@ -130,7 +130,7 @@ def ExtractLabel(Instruction, LineNumber, Memory, SymbolTable):
 
 def ExtractOpCode(Instruction, LineNumber, Memory):
     if len(Instruction) > 9:
-        OpCodeValues = ["AND", "LDA", "STA", "LDA#", "HLT", "ADD", "JMP", "SUB", "CMP#", "BEQ", "SKP", "JSR", "RTN", "   "]
+        OpCodeValues = ["LDA", "STA", "LDA#", "HLT", "ADD", "JMP", "SUB", "CMP#", "BEQ", "SKP", "JSR", "RTN", "   "]
         Operation = Instruction[7:10]
         if len(Instruction) > 10:
             AddressMode = Instruction[10:11]
@@ -275,12 +275,6 @@ def ReportRunTimeError(ErrorMessage, Registers):
     return Registers
 
 
-def ReportOverFlowError(ErrorMessage, Registers):
-    print("Stack Overflow error:", ErrorMessage)
-    Registers[ERR] = 1
-    return Registers
-
-
 def ExecuteLDA(Memory, Registers, Address):
     Registers[ACC] = Memory[Address].OperandValue
     Registers = SetFlags(Registers[ACC], Registers)
@@ -298,31 +292,7 @@ def ExecuteLDAimm(Registers, Operand):
     return Registers
 
 
-def ExecuteAND(Memory, Registers, Address):
-    outcome = ""
-    first_value = ConvertToBinary(Registers[ACC])
-    second_value = ConvertToBinary(Memory[Address].OperandValue)
-    if len(first_value) != 8:
-        for i in range(8-len(first_value)):
-            first_value = "0" + first_value
-    if len(second_value) != 8:
-        for y in range(8-len(second_value)):
-            second_value = "0" + second_value
-    print(first_value)
-    print(second_value)
-    for x in range(0, 8):
-        if first_value[x] == "1" and second_value[x] == "1":
-            outcome = outcome + "1"
-        else:
-            outcome = outcome + "0"
-    print(outcome)
-    return outcome
-
-
-
 def ExecuteADD(Memory, Registers, Address):
-    Registers[ACC] = 12
-    Memory[Address].OperandValue = 125
     Registers[ACC] = Registers[ACC] + Memory[Address].OperandValue
     Registers = SetFlags(Registers[ACC], Registers)
     if Registers[STATUS] == ConvertToDecimal("001"):
@@ -385,6 +355,27 @@ def ExecuteRTN(Memory, Registers):
     return Registers
 
 
+def ExecuteAND(Memory, Registers, Address):
+    outcome = ""
+    first_value = ConvertToBinary(Registers[ACC])
+    second_value = ConvertToBinary(Memory[Address].OperandValue)
+    if len(first_value) != 8:
+        for i in range(8-len(first_value)):
+            first_value = "0" + first_value
+    if len(second_value) != 8:
+        for y in range(8-len(second_value)):
+            second_value = "0" + second_value
+    print(first_value)
+    print(second_value)
+    for x in range(0, 8):
+        if first_value[x] == "1" and second_value[x] == "1":
+            outcome = outcome + "1"
+        else:
+            outcome = outcome + "0"
+    print(outcome)
+    return outcome
+
+
 def Execute(SourceCode, Memory):
     Registers = [0, 0, 0, 0, 0]
     Registers = SetFlags(Registers[ACC], Registers)
@@ -395,44 +386,43 @@ def Execute(SourceCode, Memory):
     DisplayCurrentState(SourceCode, Memory, Registers)
     OpCode = Memory[Registers[PC]].OpCode
     while OpCode != "HLT":
-            FrameNumber += 1
-            print()
-            DisplayFrameDelimiter(FrameNumber)
-            Operand = Memory[Registers[PC]].OperandValue
-            print("*  Current Instruction Register: ", OpCode, Operand)
-            Registers[PC] = Registers[PC] + 1
-            if OpCode == "LDA":
-                Registers = ExecuteLDA(Memory, Registers, Operand)
-            elif OpCode == "AND":
-                Memory = ExecuteAND(Memory, Registers, Operand)
-            elif OpCode == "STA":
-                Memory = ExecuteSTA(Memory, Registers, Operand)
-            elif OpCode == "LDA#":
-                Registers = ExecuteLDAimm(Registers, Operand)
-            elif OpCode == "ADD":
-                Registers = ExecuteADD(Memory, Registers, Operand)
-            elif OpCode == "JMP":
-                Registers = ExecuteJMP(Registers, Operand)
-            elif OpCode == "JSR":
-                    Memory, Registers = ExecuteJSR(Memory, Registers, Operand)
-            elif OpCode == "CMP#":
-                Registers = ExecuteCMPimm(Registers, Operand)
-            elif OpCode == "BEQ":
-                Registers = ExecuteBEQ(Registers, Operand)
-            elif OpCode == "SUB":
-                Registers = ExecuteSUB(Memory, Registers, Operand)
-            elif OpCode == "SKP":
-                ExecuteSKP()
-            elif OpCode == "RTN":
-                Registers = ExecuteRTN(Memory, Registers)
-            if Registers[ERR] == 0:
-                OpCode = Memory[Registers[PC]].OpCode
-                DisplayCurrentState(SourceCode, Memory, Registers)
-            else:
-                OpCode = "HLT"
+        FrameNumber += 1
+        print()
+        DisplayFrameDelimiter(FrameNumber)
+        Operand = Memory[Registers[PC]].OperandValue
+        print("*  Current Instruction Register: ", OpCode, Operand)
+        Registers[PC] = Registers[PC] + 1
+        if OpCode == "LDA":
+            Registers = ExecuteLDA(Memory, Registers, Operand)
+        elif OpCode == "STA":
+            Memory = ExecuteSTA(Memory, Registers, Operand)
+        elif OpCode == "LDA#":
+            Registers = ExecuteLDAimm(Registers, Operand)
+        elif OpCode == "ADD":
+            Registers = ExecuteADD(Memory, Registers, Operand)
+        elif OpCode == "JMP":
+            Registers = ExecuteJMP(Registers, Operand)
+        elif OpCode == "JSR":
+            Memory, Registers = ExecuteJSR(Memory, Registers, Operand)
+        elif OpCode == "CMP#":
+            Registers = ExecuteCMPimm(Registers, Operand)
+        elif OpCode == "BEQ":
+            Registers = ExecuteBEQ(Registers, Operand)
+        elif OpCode == "SUB":
+            Registers = ExecuteSUB(Memory, Registers, Operand)
+        elif OpCode == "SKP":
+            ExecuteSKP()
+        elif OpCode == "RTN":
+            Registers = ExecuteRTN(Memory, Registers)
+        elif OpCode == "AND":
+            Registers = ExecuteAND(Memory, Registers, Operand)
+        if Registers[ERR] == 0:
+            OpCode = Memory[Registers[PC]].OpCode
+            DisplayCurrentState(SourceCode, Memory, Registers)
+        else:
+            OpCode = "HLT"
     print("Execution terminated")
     ExecuteAND(Memory, Registers, Operand)
-
 
 
 def AssemblerSimulator():
